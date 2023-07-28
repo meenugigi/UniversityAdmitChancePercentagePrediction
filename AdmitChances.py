@@ -18,19 +18,10 @@ import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 import pickle
-# import statsmodels
-# import statsmodels.api as sm
-# from statsmodels.stats.outliers_influence import variance_inflation_factor
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.feature_selection import RFE
 from sklearn.metrics import r2_score
-from sklearn.preprocessing import OneHotEncoder,StandardScaler
-from sklearn.compose import make_column_transformer
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 pd.set_option('display.float_format', lambda x:'%.5f' % x)
-from pandas_profiling import ProfileReport
 
 def import_dataset():
   data = pd.read_csv(r"Admission_Predict_Ver1.1.csv")
@@ -51,8 +42,10 @@ def data_visualization(data):
 # Cleaning data
   data.isnull().sum()
   data = data.drop(['Serial No.'], axis=1)
-  checkOutliners(data)
+  # checkOutliners(data)
+  training_data(data)
 
+# this method is currently not used or called
 def checkOutliners(data):
 # Checking for outliners
   const_vars = [i for i in data.select_dtypes(exclude = 'object').columns if data[i].nunique() > 2]
@@ -67,7 +60,7 @@ def checkOutliners(data):
   plt.show()
   data_plotting(data)
 
-
+# this method is currently not used or called
 def data_plotting(data):
   data.rename(columns = {'LOR ':'LOR', 'Chance of Admit ':'AdmitChances', 'GRE Score':'GRE_Score', 'TOEFL Score':'TOEFL_Score', 'University Rating':'Univ_Rating'}, inplace = True)
   data.columns
@@ -106,7 +99,7 @@ def linear(data):
   from sklearn.linear_model import LinearRegression
   scaler = StandardScaler()
 
-  model = LinearRegression(normalize=True)
+  model = LinearRegression()
   pipe = make_pipeline(scaler, model)
   pipe.fit(x_train, y_train)
   pred = pipe.predict(x_test)
@@ -115,6 +108,8 @@ def linear(data):
   print(r2_score(y_test, pred))
   pickle.dump(pipe, open('LinearRegressionModel.pkl', 'wb'))
 
+
+# this method is currently not used or called
 def lassoRegression(data,x_train, x_test, y_train, y_test):
   x = data.iloc[:, [0, 1, 2, 3, 4, 5, 6]].values
   y = data.iloc[:, [7]].values
@@ -128,6 +123,7 @@ def lassoRegression(data,x_train, x_test, y_train, y_test):
   print(r2_score(y_test, lpred))
 
 
+# this method is currently not used or called
 def ridgeRegression(data,x_train, x_test, y_train, y_test):
   x = data.iloc[:, [0, 1, 2, 3, 4, 5, 6]].values
   y = data.iloc[:, [7]].values
@@ -141,7 +137,7 @@ def ridgeRegression(data,x_train, x_test, y_train, y_test):
   print(r2_score(y_test, rpred))
 
 
-
+# run method below to retrain model (pkl files)
 if __name__ == '__main__':
   import_dataset()
 
